@@ -1,0 +1,29 @@
+{
+  "name": "node-resolve-expirements",
+  "version": "0.1.0",
+  "description": "This repo is for experimenting with Node's module resolution logic for programattic lookup of the location of npm packages on disk.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thescientist13/node-resolve-expirements.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "importMaps",
+    "require"
+  ],
+  "author": "Owen Buckley <owen@thegreenhouse.io>",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.x"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "lit": "^2.0.0-rc.2"
+  },
+  "devDependencies": {
+    "fastify": "^3.19.0"
+  }
+}
