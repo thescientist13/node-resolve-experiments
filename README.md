@@ -74,6 +74,10 @@ Basically, it all boils down to at best, you can guess and maybe use some heuris
 
 > _**Note**: as alluded to above, just knowing where the package resides is only part of the challenge.  Second challenge is knowing if you need CJS vs ESM and what entry point, etc etc.  We'll see if we can try and solve that too!_
 
+## Solution (WIP)
+
+1. Initial suggestion when reaching out in NodeJS Slack was to try using [`require.resolve`](https://nodejs.org/api/modules.html#modules_require_resolve_request_options) to see if that would provide the information we are looking for.  Will try this first.
+
 
 ## Conclusions
 
