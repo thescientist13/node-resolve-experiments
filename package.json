@@ -18,6 +18,8 @@
   },
   "main": "server.js",
   "scripts": {
+    "server:cjs": "node server.js",
+    "server:esm": "node --experimental-import-meta-resolve server.mjs",
     "start": "node server.js"
   },
   "dependencies": {

@@ -21,11 +21,14 @@ After cloning:
 
 1. Make sure you have current NodeJS installed (`>=16.x`)
 1. Run `npm ci`
-1. Run `npm start` to start the server
-1. Open `localhost:3000` to view the demo app
 
 > _[**nvm**](https://github.com/nvm-sh/nvm) is helpful if you want to manage different versions of NodeJS on your local machine._
 
+You can run either of two tests:
+- `npm run server:cjs` - to start the CJS example server
+- `npm run server:esm` - to start the ESM example server
+
+Open `localhost:3000` to view the demo.
 
 ## Problem Statement
 
@@ -110,7 +113,7 @@ require.resolve.paths(lit) => [
 ]
 ```
 
-Though as expected, since we are using CJS in _server.js_, we are getting Lit's CJS entry point as defined in [_package.json#main_](https://unpkg.com/browse/lit@2.0.0-rc.2/package.json)
+I think though since we are using CJS in _server.js_, we are getting Lit's CJS entry point as defined in [_package.json#main_](https://unpkg.com/browse/lit@2.0.0-rc.2/package.json)
 ```json
 "main": "index.js",
 "module": "index.js",
@@ -155,7 +158,26 @@ Though as expected, since we are using CJS in _server.js_, we are getting Lit's 
 },
 ```
 
+Ideally we want to (make sure) we are getting something from `exports` map or `module`.
+
 So either we need to:
 - only be using ESM for our NodeJS code (something we will try next!)
 - force NodeJS to find only ESM explicitely
 - or otherwise just use `require.resolve` as the starting point of our adventure, and use our own logic to decide what file we want to return to the browser, we want to favor ESM exclusively.
+
+
+#### import.meta
+
+Now with a _server.mjs_, we can start using ESM, and although we no longer have access to `require`, when using the `--experimental-import-meta-resolve` flag, we can now use `import.meta.resolve` instead.
+
+And indeed now, for the following code
+```js
+console.debug('import.meta.resolve(lit) =>', await import.meta.resolve('lit'));
+```
+
+we can see the following ouput
+```sh
+import.meta.resolve(lit) => file:///Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/lit/index.js
+```
+
+Since _index.js_ is the same for both CJS and ESM entry points for **Lit**, I might add another test package wherein the difference between the two is perhaps not as ambiguous, just to make sure we are indeed getting the expected results, e.g. a guaranteed ESM first entry point.  (assuming it exists)
