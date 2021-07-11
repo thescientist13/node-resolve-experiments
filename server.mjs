@@ -7,7 +7,7 @@ const server = fastify({
 });
 const webroot = path.join(process.cwd(), 'public')
 
-async function generateImportMap() {
+async function getPackageLocations() {
   console.debug('import.meta.resolve(lit) =>', await import.meta.resolve('lit'));
   // console.debug('import.meta.resolve.paths(lit) =>', await import.meta.resolve.paths('lit'));
 }
@@ -15,7 +15,7 @@ async function generateImportMap() {
 server.get('/', async (request, reply) => {
   const html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
 
-  await generateImportMap();
+  await getPackageLocations();
 
   reply
     .type('text/html')

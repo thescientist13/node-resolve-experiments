@@ -7,7 +7,7 @@ const server = fastify({
 });
 const webroot = path.join(process.cwd(), 'public')
 
-function generateImportMap() {
+function getPackageLocations() {
   console.debug('require.resolve(lit) =>', require.resolve('lit'));
   console.debug('require.resolve.paths(lit) =>', require.resolve.paths('lit'));
 }
@@ -15,7 +15,7 @@ function generateImportMap() {
 server.get('/', async (request, reply) => {
   const html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
 
-  generateImportMap();
+  getPackageLocations();
 
   reply
     .type('text/html')
