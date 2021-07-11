@@ -1,10 +1,10 @@
 {
-  "name": "node-resolve-expirements",
+  "name": "node-resolve-experiments",
   "version": "0.1.0",
   "description": "This repo is for experimenting with Node's module resolution logic for programattic lookup of the location of npm packages on disk.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thescientist13/node-resolve-expirements.git"
+    "url": "git+https://github.com/thescientist13/node-resolve-experiments.git"
   },
   "keywords": [
     "NodeJS",

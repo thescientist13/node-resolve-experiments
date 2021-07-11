@@ -1,4 +1,4 @@
-# node-resolve-expirements
+# node-resolve-experiments
 
 ## Overview
 
