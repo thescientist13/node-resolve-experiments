@@ -74,11 +74,88 @@ Basically, it all boils down to at best, you can guess and maybe use some heuris
 
 > _**Note**: as alluded to above, just knowing where the package resides is only part of the challenge.  Second challenge is knowing if you need CJS vs ESM and what entry point, etc etc.  We'll see if we can try and solve that too!_
 
-## Solution (WIP)
+## Solution(s) (WIP)
 
 1. Initial suggestion when reaching out in NodeJS Slack was to try using [`require.resolve`](https://nodejs.org/api/modules.html#modules_require_resolve_request_options) to see if that would provide the information we are looking for.  Will try this first.
 
 
+## Solution(s) (WIP)
+
+1. Initial suggestion when reaching out in NodeJS Slack was to try using [`require.resolve`](https://nodejs.org/api/modules.html#modules_require_resolve_request_options) to see if that would provide the information we are looking for.  Will try this first.
+
 ## Conclusions
 
-TBD
+### require.resolve
+
+This seems promising so far, with the following code (see it in _server.js_)
+```js
+console.debug('require.resolve(lit) =>', require.resolve('lit'));
+console.debug('require.resolve.paths(lit) =>', require.resolve.paths('lit'));
+```
+
+Yielding the following output
+```sh
+require.resolve(lit) => /Users/owenbuckley/Workspace/github/repos/node-resolve-expirements/node_modules/lit/index.js
+require.resolve.paths(lit) => [
+  '/Users/owenbuckley/Workspace/github/repos/node-resolve-expirements/node_modules',
+  '/Users/owenbuckley/Workspace/github/repos/node_modules',
+  '/Users/owenbuckley/Workspace/github/node_modules',
+  '/Users/owenbuckley/Workspace/node_modules',
+  '/Users/owenbuckley/node_modules',
+  '/Users/node_modules',
+  '/node_modules',
+  '/Users/owenbuckley/.node_modules',
+  '/Users/owenbuckley/.node_libraries',
+  '/Users/owenbuckley/.nvm/versions/node/v14.16.0/lib/node'
+]
+```
+
+Though as expected, since we are using CJS in _server.js_, we are getting Lit's CJS entry point as defined in [_package.json#main_](https://unpkg.com/browse/lit@2.0.0-rc.2/package.json)
+```json
+"main": "index.js",
+"module": "index.js",
+"type": "module",
+"exports": {
+  ".": {
+    "default": "./index.js"
+  },
+  "./decorators.js": {
+    "default": "./decorators.js"
+  },
+  "./decorators/": {
+    "default": "./decorators/"
+  },
+  "./directive-helpers.js": {
+    "default": "./directive-helpers.js"
+  },
+  "./directive.js": {
+    "default": "./directive.js"
+  },
+  "./directives/": {
+    "default": "./directives/"
+  },
+  "./async-directive.js": {
+    "default": "./async-directive.js"
+  },
+  "./html.js": {
+    "default": "./html.js"
+  },
+  "./experimental-hydrate-support.js": {
+    "default": "./experimental-hydrate-support.js"
+  },
+  "./experimental-hydrate.js": {
+    "default": "./experimental-hydrate.js"
+  },
+  "./polyfill-support.js": {
+    "default": "./polyfill-support.js"
+  },
+  "./static-html.js": {
+    "default": "./static-html.js"
+  }
+},
+```
+
+So either we need to:
+- only be using ESM for our NodeJS code (something we will try next!)
+- force NodeJS to find only ESM explicitely
+- or otherwise just use `require.resolve` as the starting point of our adventure, and use our own logic to decide what file we want to return to the browser, we want to favor ESM exclusively.

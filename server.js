@@ -7,8 +7,15 @@ const server = fastify({
 });
 const webroot = path.join(process.cwd(), 'public')
 
+function generateImportMap() {
+  console.debug('require.resolve(lit) =>', require.resolve('lit'));
+  console.debug('require.resolve.paths(lit) =>', require.resolve.paths('lit'));
+}
+
 server.get('/', async (request, reply) => {
   const html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
+
+  generateImportMap();
 
   reply
     .type('text/html')
