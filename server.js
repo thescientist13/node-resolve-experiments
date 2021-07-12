@@ -10,12 +10,15 @@ const webroot = path.join(process.cwd(), 'public')
 function getPackageLocations() {
   console.debug('require.resolve(lit) =>', require.resolve('lit'));
   console.debug('require.resolve.paths(lit) =>', require.resolve.paths('lit'));
+  
+  return require.resolve('lit');
 }
 
 server.get('/', async (request, reply) => {
-  const html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
+  let html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
+  const location = getPackageLocations();
 
-  getPackageLocations();
+  html = html.replace(/<h2><\/h2>/, `<h2>Location (CJS): ${location}<\/h2>`);
 
   reply
     .type('text/html')

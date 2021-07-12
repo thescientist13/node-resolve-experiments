@@ -10,12 +10,15 @@ const webroot = path.join(process.cwd(), 'public')
 async function getPackageLocations() {
   console.debug('import.meta.resolve(lit) =>', await import.meta.resolve('lit'));
   // console.debug('import.meta.resolve.paths(lit) =>', await import.meta.resolve.paths('lit'));
+
+  return await import.meta.resolve('lit');
 }
 
 server.get('/', async (request, reply) => {
-  const html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
+  let html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
+  const location = await getPackageLocations();
 
-  await getPackageLocations();
+  html = html.replace(/<h2><\/h2>/, `<h2>Location (ESM): ${location}</h2>`);
 
   reply
     .type('text/html')
