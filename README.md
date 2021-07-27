@@ -201,4 +201,4 @@ _ESM (`import.meta.resolve`)_
 }
 ```
 
-However, both are returning _redux/lib/redux.js_?  Is this actually the expected result?  🤔
+However, both are returning _redux/lib/redux.js_?  Is this the [expected result](https://nodejs.org/api/packages.html#packages_determining_module_system)?  🤔
