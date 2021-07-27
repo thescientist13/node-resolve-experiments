@@ -202,3 +202,7 @@ _ESM (`import.meta.resolve`)_
 ```
 
 However, both are returning _redux/lib/redux.js_?  Is this the [expected result](https://nodejs.org/api/packages.html#packages_determining_module_system)?  🤔
+
+**Update**: Yes, it looks like the above is indeed [the expected behavior](https://stackoverflow.com/questions/42708484/what-is-the-module-package-json-field-for).  Appears `module` was just a [community convention](https://levelup.gitconnected.com/code-splitting-for-libraries-bundling-for-npm-with-rollup-1-0-2522c7437697#9f6f) so as far as NodeJS is concerned, it really comes down to just [`main` or an `exports` map](https://nodejs.org/api/packages.html#packages_main_entry_point_export).
+
+So for a userland tool perhaps in the absence of an `exports` map supporting `module` could be an option, but ideally always favor an `exports` map so as to spec compliant.
