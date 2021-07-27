@@ -8,17 +8,29 @@ const server = fastify({
 const webroot = path.join(process.cwd(), 'public')
 
 async function getPackageLocations() {
-  console.debug('import.meta.resolve(lit) =>', await import.meta.resolve('lit'));
-  // console.debug('import.meta.resolve.paths(lit) =>', await import.meta.resolve.paths('lit'));
+  const dependencies = JSON.parse(await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8')).dependencies;
+  const dependencyMap = {};
 
-  return await import.meta.resolve('lit');
+  for (const dep of Object.keys(dependencies)) {
+    // console.debug('import.meta.resolve =>', await import.meta.resolve(dependency));
+    // console.debug('import.meta.resolve.paths =>', await import.meta.resolve.paths(dependency));
+    dependencyMap[dep] = await import.meta.resolve(dep);
+  }
+  
+  return dependencyMap;
 }
 
 server.get('/', async (request, reply) => {
   let html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
-  const location = await getPackageLocations();
+  const locations = await getPackageLocations();
 
-  html = html.replace(/<h2><\/h2>/, `<h2>Location (ESM): ${location}</h2>`);
+  html = html.replace(/<h2><\/h2>/, `
+    <h2>Location (ESM):</h2>
+      <pre>
+        ${JSON.stringify(locations, null, 2)}
+      </pre>
+    </h2>
+  `);
 
   reply
     .type('text/html')

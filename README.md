@@ -23,8 +23,8 @@ After cloning, run `npm ci`.
 ### Commands
 
 You can run either of two commands to see the results documented below:
-- `npm run server:cjs` - to start the CJS example server
-- `npm run server:esm` - to start the ESM example server
+- `npm run serve:cjs` - to start the CJS example server
+- `npm run serve:esm` - to start the ESM example server
 
 Open `localhost:3000` to view the demo / console output.
 
@@ -174,3 +174,31 @@ import.meta.resolve(lit) => file:///Users/owenbuckley/Workspace/github/repos/nod
 ```
 
 Since _index.js_ is the same for both CJS and ESM entry points for **Lit**, I might add another test package wherein the difference between the two is perhaps not as ambiguous, just to make sure we are indeed getting the expected results, e.g. a guaranteed ESM first entry point?  (assuming it exists)
+
+#### Differing Entry Points
+
+So after adding a couple more packages, **redux** and **lodash**, I was a little surprised by the findings.  It looks like the results are the same for both CJS and ESM versions?  (Aside from the obvious difference that ESM uses `file://` protocol)
+
+Specifically for **redux**, which [ships a `main` and a `module` entry in its _package.json_](https://unpkg.com/browse/redux@4.1.0/package.json), I would have expected the following:
+* **CJS** - _path/to/node_modules/redux/lib/redux.js_
+* **ESM** - _path/to/node_modules/redux/es/redux.mjs_
+
+_CommonJS (`require.resolve`)_
+```json
+{
+  "lit": "/Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/lit/index.js",
+  "lodash": "/Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/lodash/lodash.js",
+  "redux": "/Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/redux/lib/redux.js"
+}
+```
+
+_ESM (`import.meta.resolve`)_
+```json
+{
+  "lit": "file:///Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/lit/index.js",
+  "lodash": "file:///Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/lodash/lodash.js",
+  "redux": "file:///Users/owenbuckley/Workspace/github/repos/node-resolve-experiments/node_modules/redux/lib/redux.js"
+}
+```
+
+However, both are returning _redux/lib/redux.js_?  Is this actually the expected result?  🤔

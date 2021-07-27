@@ -8,17 +8,30 @@ const server = fastify({
 const webroot = path.join(process.cwd(), 'public')
 
 function getPackageLocations() {
-  console.debug('require.resolve(lit) =>', require.resolve('lit'));
-  console.debug('require.resolve.paths(lit) =>', require.resolve.paths('lit'));
+  const dependencies = require(path.join(process.cwd(), 'package.json')).dependencies;
+  const dependencyMap = {};
+
+  for (const dep of Object.keys(dependencies)) {
+    console.debug('require.resolve =>', require.resolve(dep));
+    // console.debug('require.resolve.paths =>', require.resolve.paths(dep));
+
+    dependencyMap[dep] = require.resolve(dep);
+  }
   
-  return require.resolve('lit');
+  return dependencyMap;
 }
 
 server.get('/', async (request, reply) => {
   let html = await fs.readFile(path.join(webroot, 'index.html'), 'utf-8')
-  const location = getPackageLocations();
+  const locations = getPackageLocations();
 
-  html = html.replace(/<h2><\/h2>/, `<h2>Location (CJS): ${location}<\/h2>`);
+  html = html.replace(/<h2><\/h2>/, `
+    <h2>Location (CJS):</h2>
+      <pre>
+        ${JSON.stringify(locations, null, 2)}
+      </pre>
+    </h2>
+  `);
 
   reply
     .type('text/html')

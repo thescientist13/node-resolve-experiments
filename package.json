@@ -18,12 +18,13 @@
   },
   "main": "server.js",
   "scripts": {
-    "server:cjs": "node server.js",
-    "server:esm": "node --experimental-import-meta-resolve server.mjs",
-    "start": "node server.js"
+    "serve:cjs": "node server.js",
+    "serve:esm": "node --experimental-import-meta-resolve server.mjs"
   },
   "dependencies": {
-    "lit": "^2.0.0-rc.2"
+    "lit": "^2.0.0-rc.2",
+    "lodash": "^4.17.21",
+    "redux": "^4.1.0"
   },
   "devDependencies": {
     "fastify": "^3.19.0"
