@@ -175,7 +175,7 @@ import.meta.resolve(lit) => file:///Users/owenbuckley/Workspace/github/repos/nod
 
 Since _index.js_ is the same for both CJS and ESM entry points for **Lit**, I might add another test package wherein the difference between the two is perhaps not as ambiguous, just to make sure we are indeed getting the expected results, e.g. a guaranteed ESM first entry point?  (assuming it exists)
 
-#### Differing Entry Points
+#### Differing Entry Points (CJS vs ESM)
 
 So after adding a couple more packages, **redux** and **lodash**, I was a little surprised by the findings.  It looks like the results are the same for both CJS and ESM versions?  (Aside from the obvious difference that ESM uses `file://` protocol)
 
@@ -205,4 +205,32 @@ However, both are returning _redux/lib/redux.js_?  Is this the [expected result]
 
 **Update**: Yes, it looks like the above is indeed [the expected behavior](https://stackoverflow.com/questions/42708484/what-is-the-module-package-json-field-for).  Appears `module` was just a [community convention](https://levelup.gitconnected.com/code-splitting-for-libraries-bundling-for-npm-with-rollup-1-0-2522c7437697#9f6f) so as far as NodeJS is concerned, it really comes down to just [`main` or an `exports` map](https://nodejs.org/api/packages.html#packages_main_entry_point_export).
 
-So for a userland tool perhaps in the absence of an `exports` map supporting `module` could be an option, but ideally always favor an `exports` map so as to spec compliant.
+So for a userland tool perhaps in the absence of an `exports` map supporting `module` could be an option, but ideally always favor an `exports` map so as to spec compliant?
+
+### `require.resolve.paths`
+
+One thing [I observed](https://github.com/ProjectEvergreen/greenwood/pull/733) was that if a project has no `main` entry in its _package.json_ (or it is empty; `main: ""`), which happened for me in [**@babel/runtime**](https://unpkg.com/browse/@babel/runtime@7.15.4/package.json) and [**@types/trusted-types**](https://unpkg.com/browse/@types/trusted-types@2.0.2/package.json), then `require.resolve` will actually fail.  However, an alternative is to use [`require.resolve.paths`](https://nodejs.org/api/modules.html#modules_require_resolve_paths_request) which when passed a module (package) name, will return all the paths that NodeJS used to look for it.
+
+From there, you can find out where it is programmatically.
+```js
+const packageName = 'lit';
+let nodeModulesUrl;
+  
+try {
+  const packageEntryLocation = require.resolve(packageName);
+  const packageRootPath = packageEntryLocation.split(packageName)[0];
+
+  nodeModulesUrl = `${packageRootPath}${packageName}`;
+} catch (e) {
+  const locations = require.resolve.paths(packageName);
+
+  for (const location in locations) {
+    const nodeModulesPackageRoot = `${locations[location]}/${packageName}`;
+    const packageJsonLocation = `${nodeModulesPackageRoot}/package.json`;
+
+    if (fs.existsSync(packageJsonLocation)) {
+      nodeModulesUrl = nodeModulesPackageRoot;
+    }
+  }
+}
+```
